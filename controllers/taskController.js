@@ -35,8 +35,20 @@ module.exports.getTask = async (req, res) => {
 };
 
 // update task api
-module.exports.updateTask = (req, res) => {
-  res.send("all itms");
+module.exports.updateTask = async (req, res) => {
+  try {
+    const { id: taskID } = req.params;
+    const task = await Task.findOneAndUpdate({ _id: taskID }, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!task) {
+      return res.status(404).json({ msg: `No task with that id : ${taskID}` });
+    }
+    res.status(200).json({ task });
+  } catch (error) {
+    res.status(500).json({ msg: error });
+  }
 };
 
 // delete task api
